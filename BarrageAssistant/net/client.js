@@ -1,6 +1,8 @@
 const net = require('net');
 const util = require('util');
 const events = require('events');
+const Packet = require('./packet');
+const Message = require('./message');
 
 const host = 'openbarrage.douyutv.com';
 const port = 8601;
@@ -15,6 +17,7 @@ class Client extends events.EventEmitter{
     this.onConnected = this.onConnected.bind(this);
     this.onError = this.onError.bind(this);
     this.onClosed = this.onClosed.bind(this);
+    this.onData = this.onData.bind(this);
   }
 
   connect(){
@@ -39,11 +42,17 @@ class Client extends events.EventEmitter{
   }
 
   onData(data){
-    console.log(data);
+    if(!data)
+      return;
+    
+    this.rawBuffer += data;
+
+    this.emit('message', Message.sniff(Packet.sniff(this.rawBuffer).body));
+    this.rawBuffer = '';
   }
 
   send(message){
-    console.log('message');
+    this.socket.write(Packet.fromMessage(new Message(message)).toRaw());
   }
 }
 
