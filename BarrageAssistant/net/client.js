@@ -38,8 +38,13 @@ class Client extends events.EventEmitter{
     this.emit('close', had_error);
   }
 
-  onData(){
-    // this function to 
-    
+  onData(data){
+    console.log(data);
+  }
+
+  send(message){
+    console.log('message');
   }
 }
+
+module.exports = Client;
