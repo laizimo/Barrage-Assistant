@@ -1,6 +1,6 @@
 const Room = require('../BarrageAssistant/room');
 
-const roomID = "424559";
+const roomID = "67373";
 
 const room = new Room(roomID);
 
@@ -17,7 +17,8 @@ room.on('close', (had_error) => {
 });
 
 room.on('chatmsg', function(message){
-	console.log(`[${message.nn}]:${message.txt}`);
+  console.log(`[${message.nn}]:${message.txt}`);
+  // console.log(message);
 });
 
 room.open();

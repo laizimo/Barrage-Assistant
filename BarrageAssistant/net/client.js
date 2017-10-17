@@ -47,8 +47,36 @@ class Client extends events.EventEmitter{
     
     this.rawBuffer += data;
 
-    this.emit('message', Message.sniff(Packet.sniff(this.rawBuffer).body));
-    this.rawBuffer = '';
+    while(true){
+      let packet = null;
+
+      try {
+        packet = Packet.sniff(this.rawBuffer);
+      } catch (error) {
+        this.emit('error', error);
+        this.socket.destroy();
+        return;
+      }
+
+      if(!packet)
+        break;
+      
+      let bufferFrameLength = packet.getPacketFrameSize();
+      this.rawBuffer = this.rawBuffer.substr(bufferFrameLength);
+
+      this.messageBuffer += packet.body;
+
+      while(true){
+
+        let message = Message.sniff(this.messageBuffer);
+        if(!message)
+          break;
+        
+        this.messageBuffer = this.messageBuffer.substr(message.bodySize + 1);
+
+        this.emit('message', message);
+      }
+    }
   }
 
   send(message){

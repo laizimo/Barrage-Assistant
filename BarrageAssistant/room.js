@@ -58,6 +58,11 @@ class Room extends event.EventEmitter{
 
   onMessage(message){
     const messageType = message.getAttr('type');
+    if(!messageType) {
+      console.error('[Room] Cannot get type of message');
+      return;
+    }
+    
     if(messageType === 'loginres'){
       this.client.send({
         type: 'joingroup',
